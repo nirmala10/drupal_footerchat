@@ -1,0 +1,11 @@
+name= chat Module
+description= Module for footer chat.This module adds a footer chat bar at your site. Users will be able to chat with other users.chat key is required to run footer chat
+package= chat
+type=module
+version=1.2
+core=7.x
+scripts[]=bundle/jquery/jquery-1.11.0.min.js
+scripts[]=bundle/jquery/jquery-ui.min.js
+scripts[]=index.js
+configure =admin/config/content/chat
+

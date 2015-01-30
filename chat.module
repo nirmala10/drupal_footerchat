@@ -1,0 +1,82 @@
+<?php
+ob_start();
+$sid = session_id();
+ global $user;
+if($user->uid>0)
+    {
+       
+        drupal_add_js('misc/jquery.js',array('group'=>JS_LIBRARY,'weight'=>-200,'every_page'=>TRUE)); 
+        drupal_add_js('misc/drupal.js',array('group'=>JS_LIBRARY,'weight'=>-2,'every_page'=>TRUE));
+        drupal_add_js('misc/jquery.once.js',array('group'=>JS_LIBRARY,'weight'=>-1,'every_page'=>TRUE));
+        
+        drupal_add_js('misc/jquery.cookie.js');
+         require('auth.php');
+        // to save php variables as settings
+        $my_settings = array(
+         'id'   => "$user->uid",
+         'name' => "$user->name",
+         'sid'  =>  $sid,
+          );
+        drupal_add_js(array('chat' => $my_settings), 'setting');// to pass values from php to java script in the form of setting
+        
+        function chat_menu()
+          {
+            $items = array();
+            $items['admin/config/content/chat'] = array(
+           'title' => 'On this chat module setting',
+           'description' => 'Description of chat settings page',
+           'page callback' => 'chat_page',
+           'type' => MENU_NORMAL_ITEM,
+           'access callback' => TRUE
+            );
+           return $items;
+           }
+     
+        function chat_page() 
+          {
+          return drupal_get_form('chat_form');
+          }
+         // form to enter access key
+        function chat_form() 
+          {   
+            global$user;
+                if (db_table_exists('chat_master')) {
+                  $uid=$user->uid;
+                  $result=db_select('chat_master','chat')
+                   ->fields('chat',array('chatkey'))
+                  ->execute();
+                   while($data=$result->fetchAssoc()) 
+                   {
+                  $chatkey=$data['chatkey'];
+                   } 
+                   }  
+                   
+            drupal_set_message(' Your chat key is :');
+            drupal_set_message($chatkey);
+            $form['chatkey'] = array(
+            '#title' => t('<strong>Enter chat key<br></strong>'),
+            '#prefix' => '<div style="background-color:whitesmoke;width :500px; height:200px; margin:50px; padding:20px;">',
+            '#type' => 'textfield',
+             );
+            $form['submit'] = array(
+            '#type' => 'submit',
+            '#value' => t('Save'),
+            '#suffix' => '</div>',
+             );
+            return $form;
+           }
+ 
+         // on submission of chat key , key to insert in the data base
+        function chat_form_submit($form_id, &$form_data) 
+         {
+            global $user;
+            drupal_set_message($form_data['values']['chatkey']);
+            db_insert('chat_master')
+            ->fields(array('chatkey' => $form_data['values']['chatkey']))
+            ->execute();
+            drupal_set_message(t('Information has been saved to the database')); 
+         }
+        }
+
+
+ ?> 

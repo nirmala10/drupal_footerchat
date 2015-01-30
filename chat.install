@@ -1,0 +1,33 @@
+<?php
+//schema to create  table chat_master that saves access key for the chat in the drupal  data base 
+function chat_schema() {
+  $schema['chat_master'] = array(
+    'description' => 'A place to store vm chat key.',
+    'fields' => array(
+    'id' => array(
+    'description' => 'The primary key',
+    'type' => 'serial',
+    'unsigned' => TRUE,
+    'not null' => TRUE
+      ),
+    'chatkey' => array(
+    'description' => 'chat key.',
+    'type' => 'varchar',
+    'length' => 100,
+    'not null' => TRUE,
+    'default' => 'DESC'
+     ),
+     ),
+    'primary key' => array('id')
+  );
+
+     return $schema;
+}
+// not required in drupal-7.x
+function chat_install(){ }
+//not necessary in drupal-7.15
+function chat_uninstall() 
+{
+drupal_uninstall_schema('chat_master');
+}
+?>
