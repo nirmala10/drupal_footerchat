@@ -8,9 +8,8 @@ if($user->uid>0)
         drupal_add_js('misc/jquery.js',array('group'=>JS_LIBRARY,'weight'=>-200,'every_page'=>TRUE)); 
         drupal_add_js('misc/drupal.js',array('group'=>JS_LIBRARY,'weight'=>-2,'every_page'=>TRUE));
         drupal_add_js('misc/jquery.once.js',array('group'=>JS_LIBRARY,'weight'=>-1,'every_page'=>TRUE));
-        
         drupal_add_js('misc/jquery.cookie.js');
-         require('auth.php');
+        require('auth.php');
         // to save php variables as settings
         $my_settings = array(
          'id'   => "$user->uid",
@@ -29,17 +28,14 @@ if($user->uid>0)
            'type' => MENU_NORMAL_ITEM,
            'access callback' => TRUE
             );
+            
            return $items;
+           
            }
      
         function chat_page() 
           {
-          return drupal_get_form('chat_form');
-          }
-         // form to enter access key
-        function chat_form() 
-          {   
-            global$user;
+             global$user;
                 if (db_table_exists('chat_master')) {
                   $uid=$user->uid;
                   $result=db_select('chat_master','chat')
@@ -50,13 +46,42 @@ if($user->uid>0)
                   $chatkey=$data['chatkey'];
                    } 
                    }  
-                   
+           if(!isset($chatkey))
+           {
+           return drupal_get_form('chat_form');
+           }
+           else {
+               return drupal_get_form('chat_form2');
+           }
+          }
+         // form to enter access key
+        function chat_form() 
+          {   
+                global$user;
+                if (db_table_exists('chat_master')) {
+                  $uid=$user->uid;
+                  $result=db_select('chat_master','chat')
+                   ->fields('chat',array('chatkey'))
+                  ->execute();
+                   while($data=$result->fetchAssoc()) 
+                   {
+                  $chatkey=$data['chatkey'];
+                   } 
+                   }
+            drupal_get_messages();
+            if(isset($chatkey)){  
             drupal_set_message(' Your chat key is :');
             drupal_set_message($chatkey);
+            }
+            else
+            {
+              drupal_set_message("you dont have chat key ,insert the key");
+            }
             $form['chatkey'] = array(
             '#title' => t('<strong>Enter chat key<br></strong>'),
             '#prefix' => '<div style="background-color:whitesmoke;width :500px; height:200px; margin:50px; padding:20px;">',
             '#type' => 'textfield',
+            '#required' => TRUE,
              );
             $form['submit'] = array(
             '#type' => 'submit',
@@ -65,18 +90,67 @@ if($user->uid>0)
              );
             return $form;
            }
+           function chat_form2()
+           {
+               
+             global $user;
+              drupal_get_messages();
+            if (db_table_exists('chat_master')) {
+                  $uid=$user->uid;
+                  $result=db_select('chat_master','chat')
+                   ->fields('chat',array('chatkey'))
+                  ->execute();
+                   while($data=$result->fetchAssoc()) 
+                   {
+                  $chatkey=$data['chatkey'];
+                   } 
+                   }  
+            if(isset($chatkey)){  
+            drupal_set_message(' Your chat key is :');
+            drupal_set_message($chatkey);
+               
+               $form['delete'] = array(
+            
+           
+            '#type' => 'submit',
+            '#value' => t('delete'),
+             );
+     
+            return $form;
+               
+           }
+
+             }
+          
+          
+           
+           
  
          // on submission of chat key , key to insert in the data base
         function chat_form_submit($form_id, &$form_data) 
          {
             global $user;
-            drupal_set_message($form_data['values']['chatkey']);
+           
             db_insert('chat_master')
             ->fields(array('chatkey' => $form_data['values']['chatkey']))
             ->execute();
             drupal_set_message(t('Information has been saved to the database')); 
+           
          }
+        
+       // on submission of chat key , key to insert in the data base
+        function chat_form2_submit($form_id, &$form_data) 
+         {
+            global $user;
+             
+            theme_status_messages("key will be pemanently deleted");
+            db_delete('chat_master')
+            
+            ->execute();
+            drupal_set_message('Information has been deleted from the database'); 
+           
+           //chat_form();
+           
         }
-
-
+    }
  ?> 
