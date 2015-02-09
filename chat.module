@@ -22,7 +22,7 @@ if($user->uid>0)
           {
             $items = array();
             $items['admin/config/content/chat'] = array(
-           'title' => 'On this chat module setting',
+           'title' => ' chat module setting',
            'description' => 'Description of chat settings page',
            'page callback' => 'chat_page',
            'type' => MENU_NORMAL_ITEM,
@@ -70,7 +70,7 @@ if($user->uid>0)
                    }
             drupal_get_messages();
             if(isset($chatkey)){  
-            drupal_set_message(' Your chat key is :');
+             drupal_set_message(" Your chat key is : $chatkey " );
             drupal_set_message($chatkey);
             }
             else
@@ -79,7 +79,7 @@ if($user->uid>0)
             }
             $form['chatkey'] = array(
             '#title' => t('<strong>Enter chat key<br></strong>'),
-            '#prefix' => '<div style="background-color:whitesmoke;width :500px; height:200px; margin:50px; padding:20px;">',
+            '#prefix' => '<div style="background-color:whitesmoke;width :500px; height:100px; margin-left:200px; padding:20px;">',
             '#type' => 'textfield',
             '#required' => TRUE,
              );
@@ -106,8 +106,8 @@ if($user->uid>0)
                    } 
                    }  
             if(isset($chatkey)){  
-            drupal_set_message(' Your chat key is :');
-            drupal_set_message($chatkey);
+            drupal_set_message(" Your chat key is : $chatkey " );
+           
                
                $form['delete'] = array(
             
